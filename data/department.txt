@@ -1,0 +1,6 @@
++--------+--------------------------+
+| DeptID | Description              |
++--------+--------------------------+
+| 1     | Human Resources         |
+| 2     | Engineering             |
+| 3     | Software Engineer       |
