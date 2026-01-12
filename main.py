@@ -6,6 +6,13 @@ from assignment import (
     get_employees_in_date_range
 )
 
+def _build_employee_lookup():
+    return {e["EmpID"]: e["Name"] for e in get_all_employees()}
+
+
+def _build_department_lookup():
+    return {d["DeptID"]: d["Description"] for d in get_all_departments()}
+
 
 def print_menu():
     print("\n===================================")
@@ -48,34 +55,60 @@ def handle_assign_employee():
 
 def handle_list_on_date():
     date_str = input("Enter date (MM-DD-YYYY): ").strip()
+
+    emp_lookup = _build_employee_lookup()
+    dept_lookup = _build_department_lookup()
+
     results = get_employees_on_date(date_str)
 
     print(f"\nEmployees working on {date_str}:")
-    print("-------------------------------")
+    print("-----------------------------------------------")
+
     if not results:
         print("No employees found.")
         return
 
-    print("EmpID   DeptID")
+    print("EmpID   Name            DeptID   Department")
     for emp_id, dept_id in results:
-        print(f"{emp_id:<7} {dept_id}")
+        name = emp_lookup.get(emp_id, "Unknown")
+        dept = dept_lookup.get(dept_id, "Unknown")
+        print(f"{emp_id:<7} {name:<15} {dept_id:<8} {dept}")
 
 
 def handle_list_in_range():
     start_date = input("Enter start date (MM-DD-YYYY): ").strip()
     end_date = input("Enter end date (MM-DD-YYYY): ").strip()
 
+    emp_lookup = _build_employee_lookup()
+    dept_lookup = _build_department_lookup()
+
     results = get_employees_in_date_range(start_date, end_date)
 
     print(f"\nEmployees working between {start_date} and {end_date}:")
-    print("-----------------------------------------------------")
+    print("--------------------------------------------------------------------------")
+
     if not results:
         print("No employees found.")
         return
 
-    print("EmpID   DeptID   StartDate    EndDate")
+    print("EmpID   Name            DeptID   Department           StartDate    EndDate")
     for r in results:
-        print(f"{r['EmpID']:<7} {r['DeptID']:<8} {r['StartDate']:<12} {r['EndDate']}")
+        emp_id = r["EmpID"]
+        dept_id = r["DeptID"]
+
+        name = emp_lookup.get(emp_id, "Unknown")
+        dept = dept_lookup.get(dept_id, "Unknown")
+
+        print(
+            f"{emp_id:<7} "
+            f"{name:<15} "
+            f"{dept_id:<8} "
+            f"{dept:<20} "
+            f"{r['StartDate']:<12} "
+            f"{r['EndDate']}"
+        )
+
+
 
 
 def main():
