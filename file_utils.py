@@ -75,5 +75,18 @@ def generate_next_id(filename, id_field):
     max_id = max(int(row[id_field]) for row in rows)
     return str(max_id + 1)
 
+def rewrite_table(filename, rows):
+    schema = TABLE_SCHEMAS[filename]
+    path = os.path.join(DATA_DIR, filename)
+
+    with open(path, "r") as f:
+        header_lines = f.readlines()[:2]
+
+    with open(path, "w") as f:
+        f.writelines(header_lines)
+        for row in rows:
+            values = [row[h] for h in schema["headers"]]
+            f.write(_format_row(values, schema["widths"]))
+
 
 

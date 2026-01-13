@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from file_utils import read_table, append_row
+from file_utils import read_table, append_row, rewrite_table
 from employee import employee_exists
 from department import department_exists
 
@@ -8,9 +8,7 @@ ASSIGNMENT_FILE = "emp_dept.txt"
 DATE_FORMAT = "%m-%d-%Y"
 
 
-# -----------------------
-# Date utility functions
-# -----------------------
+
 
 def _parse_date(date_str):
     if date_str == "Current":
@@ -25,9 +23,7 @@ def _dates_overlap(start1, end1, start2, end2):
     return start1 <= end2 and start2 <= end1
 
 
-# -----------------------
-# Core assignment logic
-# -----------------------
+
 
 def assign_employee_to_department(emp_id, dept_id, start_date_str, end_date_str="Current"):
     
@@ -71,9 +67,7 @@ def assign_employee_to_department(emp_id, dept_id, start_date_str, end_date_str=
     append_row(ASSIGNMENT_FILE, assignment)
 
 
-# -----------------------
-# Query functions
-# -----------------------
+
 
 def get_employees_on_date(query_date_str):
     
@@ -108,3 +102,19 @@ def get_employees_in_date_range(start_date_str, end_date_str):
             results.append(record)
 
     return results
+
+
+def close_current_assignment(emp_id, end_date):
+    rows = read_table(ASSIGNMENT_FILE)
+
+    updated = False
+    for row in rows:
+        if row["EmpID"] == str(emp_id) and row["EndDate"] == "Current":
+            row["EndDate"] = end_date
+            updated = True
+
+    if not updated:
+        raise ValueError("No active assignment found.")
+
+    rewrite_table(ASSIGNMENT_FILE, rows)
+
